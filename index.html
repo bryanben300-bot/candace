@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eloy Awards Quick Select</title>
+</head>
+<body>
+<h2>Eloy Awards: Quick Select Nominee</h2>
+<p>Click the button below to automatically select Candace Ebhomielen‑Uaboi in the category "ELOY in Real Estate & Construction". Then go to the voting page and press "Vote".</p>
+<button id="selectNominee">Select Nominee</button>
+
+<script>
+document.getElementById('selectNominee').addEventListener('click', () => {
+    // Open the voting page in a new tab
+    const url = "https://www.eloyawards.com/vote-2025/";
+    const win = window.open(url, "_blank");
+
+    win.onload = () => {
+        try {
+            const categoryName = "ELOY in Real Estate & Construction";
+            const nomineeName = "Candace Ebhomielen‑Uaboi – MD/CEO, BlueDutch Limited";
+
+            // Find the category
+            const category = Array.from(win.document.querySelectorAll('.category')).find(cat =>
+                cat.innerText.includes(categoryName)
+            );
+
+            if (!category) {
+                console.log("Category not found!");
+                return;
+            }
+
+            // Find the nominee within that category
+            const nominee = Array.from(category.querySelectorAll('.nominee')).find(nom =>
+                nom.innerText.includes(nomineeName)
+            );
+
+            if (!nominee) {
+                console.log("Nominee not found!");
+                return;
+            }
+
+            // Select the nominee
+            const radio = nominee.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                alert("Nominee selected! Now press Vote manually.");
+            } else {
+                console.log("Radio button not found for nominee.");
+            }
+        } catch (e) {
+            console.error("Error selecting nominee:", e);
+        }
+    };
+});
+</script>
+</body>
+</html>
