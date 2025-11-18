@@ -2,58 +2,84 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eloy Awards Quick Select</title>
+<title>ELOY One-Click Voting Helper</title>
+<style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 20px; }
+    .panel {
+        max-width: 420px; margin: auto; background: #fff;
+        padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+        width: 100%; padding: 14px; border: none;
+        background: #007bff; color: white; font-size: 18px;
+        border-radius: 8px; cursor: pointer; margin-top: 10px;
+        font-weight: bold;
+    }
+    button:hover { background: #005fcc; }
+    p { font-size: 14px; color: #444; }
+</style>
 </head>
 <body>
-<h2>Eloy Awards: Quick Select Nominee</h2>
-<p>Click the button below to automatically select Candace Ebhomielen‑Uaboi in the category "ELOY in Real Estate & Construction". Then go to the voting page and press "Vote".</p>
-<button id="selectNominee">Select Nominee</button>
+
+<div class="panel">
+    <h2>ELOY Voting Quick Launcher</h2>
+
+    <p><b>Category:</b> ELOY in Real Estate & Construction</p>
+    <p><b>Nominee:</b> Candace Ebhomielen‑Uaboi – MD/CEO, BlueDutch Limited</p>
+
+    <button onclick="launch()">OPEN & HIGHLIGHT NOMINEE</button>
+
+    <p>This tool helps you jump to the right section.  
+    You still press the final vote button manually.</p>
+</div>
 
 <script>
-document.getElementById('selectNominee').addEventListener('click', () => {
-    // Open the voting page in a new tab
-    const url = "https://www.eloyawards.com/vote-2025/";
-    const win = window.open(url, "_blank");
+function launch() {
+    const voteURL = "https://www.eloyawards.com/vote-2025/";
+    const category = "ELOY in Real Estate & Construction".toLowerCase();
+    const nominee = "Candace Ebhomielen-Uaboi – MD/CEO, BlueDutch Limited".toLowerCase();
 
-    win.onload = () => {
-        try {
-            const categoryName = "ELOY in Real Estate & Construction";
-            const nomineeName = "Candace Ebhomielen‑Uaboi – MD/CEO, BlueDutch Limited";
+    const win = window.open(voteURL, "_blank");
 
-            // Find the category
-            const category = Array.from(win.document.querySelectorAll('.category')).find(cat =>
-                cat.innerText.includes(categoryName)
-            );
+    const injected = `
+        const cat = "${category}";
+        const nom = "${nominee}";
 
-            if (!category) {
-                console.log("Category not found!");
-                return;
+        function runHighlight() {
+            let headers = document.querySelectorAll("h1, h2, h3, h4, h5");
+
+            let matchedHeader = null;
+            headers.forEach(h => {
+                if (h.innerText.toLowerCase().includes(cat)) {
+                    h.style.background = "yellow";
+                    h.style.padding = "6px";
+                    matchedHeader = h;
+                }
+            });
+
+            if (matchedHeader) {
+                matchedHeader.scrollIntoView({ behavior: "smooth", block: "center" });
+
+                setTimeout(() => {
+                    let elements = document.querySelectorAll("label, span, p, div");
+                    elements.forEach(el => {
+                        if (el.innerText.toLowerCase().includes(nom)) {
+                            el.style.background = "lime";
+                            el.style.padding = "6px";
+                            el.style.fontWeight = "bold";
+                            el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }
+                    });
+                }, 800);
             }
-
-            // Find the nominee within that category
-            const nominee = Array.from(category.querySelectorAll('.nominee')).find(nom =>
-                nom.innerText.includes(nomineeName)
-            );
-
-            if (!nominee) {
-                console.log("Nominee not found!");
-                return;
-            }
-
-            // Select the nominee
-            const radio = nominee.querySelector('input[type="radio"]');
-            if (radio) {
-                radio.checked = true;
-                alert("Nominee selected! Now press Vote manually.");
-            } else {
-                console.log("Radio button not found for nominee.");
-            }
-        } catch (e) {
-            console.error("Error selecting nominee:", e);
         }
-    };
-});
+
+        setTimeout(runHighlight, 1200);
+    `;
+
+    win.onload = () => win.eval(injected);
+}
 </script>
+
 </body>
 </html>
